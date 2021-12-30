@@ -1,3 +1,0 @@
-ArgumentError: Package FFTW not found in current path:
-- Run `import Pkg; Pkg.add("FFTW")` to install the FFTW package.
-

@@ -1,3 +1,2 @@
-ArgumentError: Package LinearOperators not found in current path:
-- Run `import Pkg; Pkg.add("LinearOperators")` to install the LinearOperators package.
-
+eltype(dft)         = Float64
+eltype(v)           = Float64
