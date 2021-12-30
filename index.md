@@ -1,7 +1,7 @@
-@def title = "Template"
+@def title = "Introduction to Linear Operators"
 @def showall = true
-@def tags = ["template", "fix-me"]
+@def tags = ["linear-algebra", "linear-operators"]
 
-\preamble{AUTHORS}
+\preamble{Geoffroy Leconte and Dominique Orban}
 
 \literate{/index.jl}
