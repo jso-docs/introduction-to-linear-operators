@@ -26,6 +26,7 @@ Here are the steps to run this locally:
   ```
 - Go to https://localhost:8000 to check that everything is running
 - Edit `index.md` and `index.jl` as needed.
+- If you `pkg> add` any package, add a `[compat]` upper bound.
 
 ## Publishing
 
