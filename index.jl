@@ -129,8 +129,22 @@ dft = LinearOperator(Float64, 10, 10, false, false,
 v = rand(10)
 println("eltype(dft)         = $(eltype(dft))")
 println("eltype(v)           = $(eltype(v))")
-# dft * v     # ERROR: expected Vector{Float64}
-# Matrix(dft) # ERROR: tried to create a Matrix of Float64
+
+#
+
+try
+  dft * v     # ERROR: expected Vector{Float64}
+catch ex
+  println("ex = $ex")
+end
+
+#
+
+try
+  Matrix(dft) # ERROR: tried to create a Matrix of Float64
+catch ex
+  println("ex = $ex")
+end
 
 # ## Limited memory BFGS and SR1
 
