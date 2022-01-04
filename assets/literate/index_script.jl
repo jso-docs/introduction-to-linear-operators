@@ -89,6 +89,18 @@ v = rand(10)
 println("eltype(dft)         = $(eltype(dft))")
 println("eltype(v)           = $(eltype(v))")
 
+try
+  dft * v     # ERROR: expected Vector{Float64}
+catch ex
+  println("ex = $ex")
+end
+
+try
+  Matrix(dft) # ERROR: tried to create a Matrix of Float64
+catch ex
+  println("ex = $ex")
+end
+
 B = LBFGSOperator(20)
 H = InverseLBFGSOperator(20)
 r = 0.0

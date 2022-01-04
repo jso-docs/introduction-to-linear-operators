@@ -136,14 +136,27 @@ println("eltype(dft)         = $(eltype(dft))")
 println("eltype(v)           = $(eltype(v))")
 ```
 
-dft * v     # ERROR: expected Vector{Float64}
-Matrix(dft) # ERROR: tried to create a Matrix of Float64
+```julia:ex8
+try
+  dft * v     # ERROR: expected Vector{Float64}
+catch ex
+  println("ex = $ex")
+end
+```
+
+```julia:ex9
+try
+  Matrix(dft) # ERROR: tried to create a Matrix of Float64
+catch ex
+  println("ex = $ex")
+end
+```
 
 ## Limited memory BFGS and SR1
 
 Two other useful operators are the Limited-Memory BFGS in forward and inverse form.
 
-```julia:ex8
+```julia:ex10
 B = LBFGSOperator(20)
 H = InverseLBFGSOperator(20)
 r = 0.0
@@ -164,7 +177,7 @@ There is also a LSR1 operator that behaves similarly to these two.
 
 The restriction operator restricts a vector to a set of indices.
 
-```julia:ex9
+```julia:ex11
 v = collect(1:5)
 R = opRestriction([2;5], 5)
 R * v
@@ -172,13 +185,13 @@ R * v
 
 Notice that it corresponds to a matrix with rows of the identity given by the indices.
 
-```julia:ex10
+```julia:ex12
 Matrix(R)
 ```
 
 The extension operator is the transpose of the restriction. It extends a vector with zeros.
 
-```julia:ex11
+```julia:ex13
 v = collect(1:2)
 E = opExtension([2;5], 5)
 E * v
@@ -186,7 +199,7 @@ E * v
 
 With these operators, we define the slices of an operator `op`.
 
-```julia:ex12
+```julia:ex14
 A = rand(5,5)
 opA = LinearOperator(A)
 I = [1;3;5]
@@ -194,21 +207,21 @@ J = 2:4
 A[I,J] * ones(3)
 ```
 
-```julia:ex13
+```julia:ex15
 opRestriction(I, 5) * opA * opExtension(J, 5) * ones(3)
 ```
 
 A main difference with matrices, is that slices **do not** return vectors nor numbers.
 
-```julia:ex14
+```julia:ex16
 opA[1,:] * ones(5)
 ```
 
-```julia:ex15
+```julia:ex17
 opA[:,1] * ones(1)
 ```
 
-```julia:ex16
+```julia:ex18
 opA[1,1] * ones(1)
 ```
 
