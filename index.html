@@ -6,16 +6,16 @@ op2 &#61; LinearOperator&#40;A2&#41;
 op &#61; op1 * op2  # Does not form A1 * A2
 x &#61; rand&#40;3&#41;
 y &#61; op * x</code></pre><pre><code class="plaintext code-output">5-element Vector{Float64}:
- 0.4805777345175453
- 0.2402866770599137
- 0.6446408937253985
- 0.29653199075706843
- 0.23429745756904247</code></pre> <h2 id=inverse ><a href="#inverse" class=header-anchor >Inverse</a></h2> <p>Operators may be defined to represent &#40;approximate&#41; inverses.</p> <pre><code class=language-julia >using LinearAlgebra
+ 0.513732534250161
+ 0.5009677069860468
+ 0.6278437862250502
+ 0.649442939438621
+ 0.6262373297126156</code></pre> <h2 id=inverse ><a href="#inverse" class=header-anchor >Inverse</a></h2> <p>Operators may be defined to represent &#40;approximate&#41; inverses.</p> <pre><code class=language-julia >using LinearAlgebra
 A &#61; rand&#40;5,5&#41;
 A &#61; A&#39; * A
 op &#61; opCholesky&#40;A&#41;  # Use, e.g., as a preconditioner
 v &#61; rand&#40;5&#41;
-norm&#40;A \ v - op * v&#41; / norm&#40;v&#41;</code></pre><pre><code class="plaintext code-output">6.254227654705339e-13</code></pre>
+norm&#40;A \ v - op * v&#41; / norm&#40;v&#41;</code></pre><pre><code class="plaintext code-output">3.776597440583855e-15</code></pre>
 <p>In this example, the Cholesky factor is computed only once and can be used many times transparently.</p>
 <h2 id=mul ><a href="#mul" class=header-anchor >mul&#33;</a></h2>
 <p>It is often useful to reuse the memory used by the operator. For that reason, we can use <code>mul&#33;</code> on operators as if we were using matrices using preallocated vectors:</p>
@@ -58,18 +58,18 @@ dft &#61; LinearOperator&#40;ComplexF64, 10, 10, false, false,
                      mulifft&#33;&#41;
 x &#61; rand&#40;10&#41;
 y &#61; dft * x
-norm&#40;dft&#39; * y - x&#41;  # DFT is a unitary operator</code></pre><pre><code class="plaintext code-output">1.2719202621569003e-16</code></pre>
+norm&#40;dft&#39; * y - x&#41;  # DFT is a unitary operator</code></pre><pre><code class="plaintext code-output">3.510833468576701e-16</code></pre>
 <pre><code class=language-julia >transpose&#40;dft&#41; * y</code></pre><pre><code class="plaintext code-output">10-element Vector{ComplexF64}:
-  0.4227922499503494 - 0.0im
- 0.15199377938920844 - 0.0im
- 0.36643344254869176 - 0.0im
-  0.2883315398466639 - 0.0im
- 0.38302825450922623 - 0.0im
- 0.17943193707735686 - 0.0im
- 0.47604128484824254 - 0.0im
-   0.749305653474155 - 0.0im
-  0.6098341822241515 + 0.0im
-  0.8157538880729416 - 0.0im</code></pre>
+    0.836866937868042 - 0.0im
+ 0.023899026832464587 - 0.0im
+   0.9807676383280546 - 0.0im
+  0.06638967512979055 - 0.0im
+   0.3308424170092684 - 0.0im
+  0.17962106342927098 - 0.0im
+   0.2187514314997906 - 0.0im
+   0.5143963510062383 - 0.0im
+   0.7603629150378259 + 0.0im
+  0.15987554124734993 - 0.0im</code></pre>
 <p>Another example:</p>
 <pre><code class=language-julia >function customfunc&#33;&#40;res, v, α, β::T&#41; where T
   if β &#61;&#61; zero&#40;T&#41;
@@ -117,7 +117,7 @@ eltype(v)           = Float64
   dft * v     # ERROR: expected Vector&#123;Float64&#125;
 catch ex
   println&#40;&quot;ex &#61; &#36;ex&quot;&#41;
-end</code></pre><pre><code class="plaintext code-output">ex = InexactError(:Float64, Float64, 0.2244128851885718 - 0.288855892915869im)
+end</code></pre><pre><code class="plaintext code-output">ex = InexactError(:Float64, Float64, 0.28192451460658663 - 0.012822111756786717im)
 </code></pre>
 <pre><code class=language-julia >try
   Matrix&#40;dft&#41; # ERROR: tried to create a Matrix of Float64
@@ -138,7 +138,7 @@ for i &#61; 1:100
   push&#33;&#40;H, s, y&#41;
   r &#43;&#61; norm&#40;B * H * s - s&#41;
 end
-r</code></pre><pre><code class="plaintext code-output">4.0376953588018e-13</code></pre>
+r</code></pre><pre><code class="plaintext code-output">3.945244984182153e-13</code></pre>
 <p>There is also a LSR1 operator that behaves similarly to these two.</p>
 <h2 id=restriction_extension_and_slices ><a href="#restriction_extension_and_slices" class=header-anchor >Restriction, extension and slices</a></h2>
 <p>The restriction operator restricts a vector to a set of indices.</p>
@@ -166,24 +166,24 @@ opA &#61; LinearOperator&#40;A&#41;
 I &#61; &#91;1;3;5&#93;
 J &#61; 2:4
 A&#91;I,J&#93; * ones&#40;3&#41;</code></pre><pre><code class="plaintext code-output">3-element Vector{Float64}:
- 1.8479522479364747
- 1.2852471453581051
- 0.6544019259915783</code></pre>
+ 1.878970970086142
+ 2.0172965532271525
+ 2.025979735103124</code></pre>
 <pre><code class=language-julia >opRestriction&#40;I, 5&#41; * opA * opExtension&#40;J, 5&#41; * ones&#40;3&#41;</code></pre><pre><code class="plaintext code-output">3-element Vector{Float64}:
- 1.8479522479364747
- 1.2852471453581051
- 0.6544019259915783</code></pre>
+ 1.878970970086142
+ 2.0172965532271525
+ 2.025979735103124</code></pre>
 <p>A main difference with matrices, is that slices <strong>do not</strong> return vectors nor numbers.</p>
 <pre><code class=language-julia >opA&#91;1,:&#93; * ones&#40;5&#41;</code></pre><pre><code class="plaintext code-output">1-element Vector{Float64}:
- 2.818760552706026</code></pre>
+ 2.931186090118257</code></pre>
 <pre><code class=language-julia >opA&#91;:,1&#93; * ones&#40;1&#41;</code></pre><pre><code class="plaintext code-output">5-element Vector{Float64}:
- 0.1316903627500784
- 0.33424015150624997
- 0.629705351720713
- 0.3196578539069457
- 0.4365388142033647</code></pre>
+ 0.9883398861513022
+ 0.4189415185369558
+ 0.4851117749079811
+ 0.815215673250921
+ 0.9358930380898671</code></pre>
 <pre><code class=language-julia >opA&#91;1,1&#93; * ones&#40;1&#41;</code></pre><pre><code class="plaintext code-output">1-element Vector{Float64}:
- 0.1316903627500784</code></pre>
+ 0.9883398861513022</code></pre>
 
 </div>
     </div>  
@@ -200,7 +200,7 @@ A&#91;I,J&#93; * ones&#40;3&#41;</code></pre><pre><code class="plaintext code-ou
     <footer class=footer >
       <div class="content has-text-centered is-small">
         &copy; Abel Soares Siqueira. <br>
-        Last modified: January 04, 2022.<br>
+        Last modified: January 05, 2022.<br>
         <a ckass=link  href="https://github.com/jso-docs/">jso-docs at GitHub</a>
       </div>
     </footer>
