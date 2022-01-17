@@ -6,16 +6,16 @@ op2 &#61; LinearOperator&#40;A2&#41;
 op &#61; op1 * op2  # Does not form A1 * A2
 x &#61; rand&#40;3&#41;
 y &#61; op * x</code></pre><pre><code class="plaintext code-output">5-element Vector{Float64}:
- 0.3746693813092299
- 0.24926598909060643
- 0.26357057974554415
- 0.16782886250155632
- 0.28424671712900845</code></pre> <h2 id=inverse ><a href="#inverse" class=header-anchor >Inverse</a></h2> <p>Operators may be defined to represent &#40;approximate&#41; inverses.</p> <pre><code class=language-julia >using LinearAlgebra
+ 0.7156598948957689
+ 0.4893135548179636
+ 0.6873743435376213
+ 0.6939795172400869
+ 0.619787303520108</code></pre> <h2 id=inverse ><a href="#inverse" class=header-anchor >Inverse</a></h2> <p>Operators may be defined to represent &#40;approximate&#41; inverses.</p> <pre><code class=language-julia >using LinearAlgebra
 A &#61; rand&#40;5,5&#41;
 A &#61; A&#39; * A
 op &#61; opCholesky&#40;A&#41;  # Use, e.g., as a preconditioner
 v &#61; rand&#40;5&#41;
-norm&#40;A \ v - op * v&#41; / norm&#40;v&#41;</code></pre><pre><code class="plaintext code-output">4.4300709981301166e-14</code></pre>
+norm&#40;A \ v - op * v&#41; / norm&#40;v&#41;</code></pre><pre><code class="plaintext code-output">5.070419595920243e-10</code></pre>
 <p>In this example, the Cholesky factor is computed only once and can be used many times transparently.</p>
 <h2 id=mul ><a href="#mul" class=header-anchor >mul&#33;</a></h2>
 <p>It is often useful to reuse the memory used by the operator. For that reason, we can use <code>mul&#33;</code> on operators as if we were using matrices using preallocated vectors:</p>
@@ -58,18 +58,18 @@ dft &#61; LinearOperator&#40;ComplexF64, 10, 10, false, false,
                      mulifft&#33;&#41;
 x &#61; rand&#40;10&#41;
 y &#61; dft * x
-norm&#40;dft&#39; * y - x&#41;  # DFT is a unitary operator</code></pre><pre><code class="plaintext code-output">2.5324586304240974e-16</code></pre>
+norm&#40;dft&#39; * y - x&#41;  # DFT is a unitary operator</code></pre><pre><code class="plaintext code-output">1.2719202621569003e-16</code></pre>
 <pre><code class=language-julia >transpose&#40;dft&#41; * y</code></pre><pre><code class="plaintext code-output">10-element Vector{ComplexF64}:
- 0.13141356669746984 - 0.0im
- 0.24239009644329618 - 0.0im
-  0.6189890838009293 - 0.0im
- 0.33828994673340684 - 0.0im
-  0.6670291532611374 - 0.0im
- 0.04438528740295973 - 0.0im
- 0.27923153745524315 - 0.0im
- 0.23450474099949276 - 0.0im
- 0.16759597360583572 + 0.0im
- 0.20557743982119955 - 0.0im</code></pre>
+  0.8399697018472537 - 0.0im
+ 0.41786685454865613 - 0.0im
+ 0.15209257805537746 - 0.0im
+  0.5954282784366333 - 0.0im
+  0.7484053910271318 - 0.0im
+  0.7289141281569947 - 0.0im
+  0.4856427496412941 - 0.0im
+ 0.08387617983555487 - 0.0im
+  0.3602333869571741 + 0.0im
+ 0.48309613464054313 - 0.0im</code></pre>
 <p>Another example:</p>
 <pre><code class=language-julia >function customfunc&#33;&#40;res, v, α, β::T&#41; where T
   if β &#61;&#61; zero&#40;T&#41;
@@ -117,7 +117,7 @@ eltype(v)           = Float64
   dft * v     # ERROR: expected Vector&#123;Float64&#125;
 catch ex
   println&#40;&quot;ex &#61; &#36;ex&quot;&#41;
-end</code></pre><pre><code class="plaintext code-output">ex = InexactError(:Float64, Float64, 1.219021838256555 - 0.6296775999169594im)
+end</code></pre><pre><code class="plaintext code-output">ex = InexactError(:Float64, Float64, -0.5532529385100576 - 0.31440742415794976im)
 </code></pre>
 <pre><code class=language-julia >try
   Matrix&#40;dft&#41; # ERROR: tried to create a Matrix of Float64
@@ -138,7 +138,7 @@ for i &#61; 1:100
   push&#33;&#40;H, s, y&#41;
   r &#43;&#61; norm&#40;B * H * s - s&#41;
 end
-r</code></pre><pre><code class="plaintext code-output">3.4728088100445197e-13</code></pre>
+r</code></pre><pre><code class="plaintext code-output">3.7129989998760227e-13</code></pre>
 <p>There is also a LSR1 operator that behaves similarly to these two.</p>
 <h2 id=restriction_extension_and_slices ><a href="#restriction_extension_and_slices" class=header-anchor >Restriction, extension and slices</a></h2>
 <p>The restriction operator restricts a vector to a set of indices.</p>
@@ -166,24 +166,24 @@ opA &#61; LinearOperator&#40;A&#41;
 I &#61; &#91;1;3;5&#93;
 J &#61; 2:4
 A&#91;I,J&#93; * ones&#40;3&#41;</code></pre><pre><code class="plaintext code-output">3-element Vector{Float64}:
- 2.152443729328254
- 2.179469727824748
- 1.6775652407343187</code></pre>
+ 1.5366570156309087
+ 1.235381308356565
+ 1.6231749058422302</code></pre>
 <pre><code class=language-julia >opRestriction&#40;I, 5&#41; * opA * opExtension&#40;J, 5&#41; * ones&#40;3&#41;</code></pre><pre><code class="plaintext code-output">3-element Vector{Float64}:
- 2.152443729328254
- 2.179469727824748
- 1.6775652407343187</code></pre>
+ 1.5366570156309087
+ 1.235381308356565
+ 1.6231749058422302</code></pre>
 <p>A main difference with matrices, is that slices <strong>do not</strong> return vectors nor numbers.</p>
 <pre><code class=language-julia >opA&#91;1,:&#93; * ones&#40;5&#41;</code></pre><pre><code class="plaintext code-output">1-element Vector{Float64}:
- 3.2183146471047475</code></pre>
+ 2.675970032630866</code></pre>
 <pre><code class=language-julia >opA&#91;:,1&#93; * ones&#40;1&#41;</code></pre><pre><code class="plaintext code-output">5-element Vector{Float64}:
- 0.8873548007237835
- 0.05129089751581106
- 0.5091612424987783
- 0.5440038777612173
- 0.6803688329375625</code></pre>
+ 0.8645118422210961
+ 0.45917822007811204
+ 0.5584795821056999
+ 0.44726803156027406
+ 0.05975110950329521</code></pre>
 <pre><code class=language-julia >opA&#91;1,1&#93; * ones&#40;1&#41;</code></pre><pre><code class="plaintext code-output">1-element Vector{Float64}:
- 0.8873548007237835</code></pre>
+ 0.8645118422210961</code></pre>
 
 </div>
     </div>  
