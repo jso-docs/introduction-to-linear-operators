@@ -1,0 +1,4 @@
+Sitemap: https://jso-docs-linearoperators.netlify.app/previews/PR3/sitemap.xml
+
+User-agent: *
+Disallow:
