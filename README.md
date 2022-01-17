@@ -3,6 +3,8 @@
 For efficiency reasons, we split the JSO tutorials into different repositories.
 Clone this template to use it for a new tutorial.
 
+- Pull requests previews are on https://jso-docs-linearoperators.netlify.app/previews/PR#XXX
+
 ## Running locally - Development guide
 
 This website uses the structure of the root website under it to avoid duplicating updates to the css and layout.
