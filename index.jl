@@ -68,15 +68,15 @@ may contain `NaN` values, and `0 * NaN == NaN`.
 =#
 
 using FFTW
-function mulfft!(res, v, α, β::T) where T
-  if β == zero(T)
+function mulfft!(res, v, α, β)
+  if β == 0
     res .= α .* fft(v)
   else
     res .= α .* fft(v) .+ β .* res
   end
 end
-function mulifft!(res, w, α, β::T) where T
-  if β == zero(T)
+function mulifft!(res, w, α, β)
+  if β == 0
     res .= α .* ifft(w)
   else
     res .= α .* ifft(w) .+ β .* res
@@ -96,8 +96,8 @@ transpose(dft) * y
 
 # Another example:
 
-function customfunc!(res, v, α, β::T) where T
-  if β == zero(T)
+function customfunc!(res, v, α, β)
+  if β == 0
     res[1] = (v[1] + v[2]) * α
     res[2] = v[2] * α
   else
@@ -105,8 +105,8 @@ function customfunc!(res, v, α, β::T) where T
     res[2] = v[2] * α + res[2] * β
   end
 end
-function tcustomfunc!(res, w, α, β::T) where T
-  if β == zero(T)
+function tcustomfunc!(res, w, α, β)
+  if β == 0
     res[1] = w[1] * α
     res[2] =  (w[1] + w[2]) * α
   else
@@ -114,10 +114,24 @@ function tcustomfunc!(res, w, α, β::T) where T
     res[2] =  (w[1] + w[2]) * α + res[2] * β
   end
 end
-op = LinearOperator(Float64, 10, 10, false, false,
+op = LinearOperator(Float64, 2, 2, false, false,
                     customfunc!,
                     nothing,
                     tcustomfunc!)
+
+# Operators can also be defined with the 3-args `mul!` function:
+
+op2 = LinearOperator(Float64, 2, 2, false, false,
+                     (res, v) -> customfunc!(res, v, 1.0, 0.),
+                     nothing,
+                     (res, w) -> tcustomfunc!(res, w, 1.0, 0.))
+
+# When using the 5-args `mul!` with the above operator, some vectors will be allocated (only at the first call):
+
+res, a = zeros(2), rand(2)
+mul!(res, op2, a) # compile
+println("allocations 1st call = ", @allocated mul!(res, op2, a, 2.0, 3.0))
+println("allocations 2nd call = ", @allocated mul!(res, op2, a, 2.0, 3.0))
 
 # Make sure that the type passed to `LinearOperator` is correct, otherwise errors may occur.
 
@@ -145,6 +159,19 @@ try
 catch ex
   println("ex = $ex")
 end
+
+## Using external modules
+
+# It is possible to use certain modules made for matrices that do not need to access specific elements of their input matrices, and only use operations implemented within LinearOperators, such as `mul!`, `*`, `+`, ...
+# For example, we show the solution of a linear system using [`Krylov.jl`](https://github.com/JuliaSmoothOptimizers/Krylov.jl):
+  
+using Krylov
+A = rand(5, 5)
+opA = LinearOperator(A)
+opAAT = opA + opA'
+b = rand(5)
+(x, stats) = minres(opAAT, b)
+norm(b - opAAT * x)
 
 # ## Limited memory BFGS and SR1
 
