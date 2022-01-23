@@ -1,9 +1,5 @@
 # This file was generated, do not modify it. # hide
-using LinearOperators, FFTW # hide
-dft = LinearOperator(Float64, 10, 10, false, false,
-                     mulfft!,
+op2 = LinearOperator(Float64, 2, 2, false, false,
+                     (res, v) -> customfunc!(res, v, 1.0, 0.),
                      nothing,
-                     mulifft!)
-v = rand(10)
-println("eltype(dft)         = $(eltype(dft))")
-println("eltype(v)           = $(eltype(v))")
+                     (res, w) -> tcustomfunc!(res, w, 1.0, 0.))

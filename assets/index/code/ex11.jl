@@ -1,4 +1,8 @@
 # This file was generated, do not modify it. # hide
-v = collect(1:5)
-R = opRestriction([2;5], 5)
-R * v
+try
+  Matrix(dft) # ERROR: tried to create a Matrix of Float64
+catch ex
+  println("ex = $ex")
+end
+
+# Using external modules

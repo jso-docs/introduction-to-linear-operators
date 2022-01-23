@@ -33,15 +33,15 @@ al = @allocated mul!(res, op, v, α, β) # α * op * v + β * res, store result 
 println("Allocation of LinearOperator mul! product = $al")
 
 using FFTW
-function mulfft!(res, v, α, β::T) where T
-  if β == zero(T)
+function mulfft!(res, v, α, β)
+  if β == 0
     res .= α .* fft(v)
   else
     res .= α .* fft(v) .+ β .* res
   end
 end
-function mulifft!(res, w, α, β::T) where T
-  if β == zero(T)
+function mulifft!(res, w, α, β)
+  if β == 0
     res .= α .* ifft(w)
   else
     res .= α .* ifft(w) .+ β .* res
@@ -57,8 +57,8 @@ norm(dft' * y - x)  # DFT is a unitary operator
 
 transpose(dft) * y
 
-function customfunc!(res, v, α, β::T) where T
-  if β == zero(T)
+function customfunc!(res, v, α, β)
+  if β == 0
     res[1] = (v[1] + v[2]) * α
     res[2] = v[2] * α
   else
@@ -66,8 +66,8 @@ function customfunc!(res, v, α, β::T) where T
     res[2] = v[2] * α + res[2] * β
   end
 end
-function tcustomfunc!(res, w, α, β::T) where T
-  if β == zero(T)
+function tcustomfunc!(res, w, α, β)
+  if β == 0
     res[1] = w[1] * α
     res[2] =  (w[1] + w[2]) * α
   else
@@ -75,10 +75,20 @@ function tcustomfunc!(res, w, α, β::T) where T
     res[2] =  (w[1] + w[2]) * α + res[2] * β
   end
 end
-op = LinearOperator(Float64, 10, 10, false, false,
+op = LinearOperator(Float64, 2, 2, false, false,
                     customfunc!,
                     nothing,
                     tcustomfunc!)
+
+op2 = LinearOperator(Float64, 2, 2, false, false,
+                     (res, v) -> customfunc!(res, v, 1.0, 0.),
+                     nothing,
+                     (res, w) -> tcustomfunc!(res, w, 1.0, 0.))
+
+res, a = zeros(2), rand(2)
+mul!(res, op2, a) # compile
+println("allocations 1st call = ", @allocated mul!(res, op2, a, 2.0, 3.0))
+println("allocations 2nd call = ", @allocated mul!(res, op2, a, 2.0, 3.0))
 
 using LinearOperators, FFTW # hide
 dft = LinearOperator(Float64, 10, 10, false, false,
@@ -100,6 +110,16 @@ try
 catch ex
   println("ex = $ex")
 end
+
+# Using external modules
+
+using Krylov
+A = rand(5, 5)
+opA = LinearOperator(A)
+opAAT = opA + opA'
+b = rand(5)
+(x, stats) = minres(opAAT, b)
+norm(b - opAAT * x)
 
 B = LBFGSOperator(20)
 H = InverseLBFGSOperator(20)

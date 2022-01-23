@@ -1,1 +1,2 @@
-ex = InexactError(:Float64, Float64, 0.8090169943749475 - 0.5877852522924731im)
+eltype(dft)         = Float64
+eltype(v)           = Float64

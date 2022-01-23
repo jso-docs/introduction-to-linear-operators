@@ -69,15 +69,15 @@ may contain `NaN` values, and `0 * NaN == NaN`.
 
 ```julia:ex4
 using FFTW
-function mulfft!(res, v, α, β::T) where T
-  if β == zero(T)
+function mulfft!(res, v, α, β)
+  if β == 0
     res .= α .* fft(v)
   else
     res .= α .* fft(v) .+ β .* res
   end
 end
-function mulifft!(res, w, α, β::T) where T
-  if β == zero(T)
+function mulifft!(res, w, α, β)
+  if β == 0
     res .= α .* ifft(w)
   else
     res .= α .* ifft(w) .+ β .* res
@@ -99,8 +99,8 @@ transpose(dft) * y
 Another example:
 
 ```julia:ex6
-function customfunc!(res, v, α, β::T) where T
-  if β == zero(T)
+function customfunc!(res, v, α, β)
+  if β == 0
     res[1] = (v[1] + v[2]) * α
     res[2] = v[2] * α
   else
@@ -108,8 +108,8 @@ function customfunc!(res, v, α, β::T) where T
     res[2] = v[2] * α + res[2] * β
   end
 end
-function tcustomfunc!(res, w, α, β::T) where T
-  if β == zero(T)
+function tcustomfunc!(res, w, α, β)
+  if β == 0
     res[1] = w[1] * α
     res[2] =  (w[1] + w[2]) * α
   else
@@ -117,15 +117,33 @@ function tcustomfunc!(res, w, α, β::T) where T
     res[2] =  (w[1] + w[2]) * α + res[2] * β
   end
 end
-op = LinearOperator(Float64, 10, 10, false, false,
+op = LinearOperator(Float64, 2, 2, false, false,
                     customfunc!,
                     nothing,
                     tcustomfunc!)
 ```
 
-Make sure that the type passed to `LinearOperator` is correct, otherwise errors may occur.
+Operators can also be defined with the 3-args `mul!` function:
 
 ```julia:ex7
+op2 = LinearOperator(Float64, 2, 2, false, false,
+                     (res, v) -> customfunc!(res, v, 1.0, 0.),
+                     nothing,
+                     (res, w) -> tcustomfunc!(res, w, 1.0, 0.))
+```
+
+When using the 5-args `mul!` with the above operator, some vectors will be allocated (only at the first call):
+
+```julia:ex8
+res, a = zeros(2), rand(2)
+mul!(res, op2, a) # compile
+println("allocations 1st call = ", @allocated mul!(res, op2, a, 2.0, 3.0))
+println("allocations 2nd call = ", @allocated mul!(res, op2, a, 2.0, 3.0))
+```
+
+Make sure that the type passed to `LinearOperator` is correct, otherwise errors may occur.
+
+```julia:ex9
 using LinearOperators, FFTW # hide
 dft = LinearOperator(Float64, 10, 10, false, false,
                      mulfft!,
@@ -136,7 +154,7 @@ println("eltype(dft)         = $(eltype(dft))")
 println("eltype(v)           = $(eltype(v))")
 ```
 
-```julia:ex8
+```julia:ex10
 try
   dft * v     # ERROR: expected Vector{Float64}
 catch ex
@@ -144,19 +162,34 @@ catch ex
 end
 ```
 
-```julia:ex9
+```julia:ex11
 try
   Matrix(dft) # ERROR: tried to create a Matrix of Float64
 catch ex
   println("ex = $ex")
 end
+
+# Using external modules
+```
+
+It is possible to use certain modules made for matrices that do not need to access specific elements of their input matrices, and only use operations implemented within LinearOperators, such as `mul!`, `*`, `+`, ...
+For example, we show the solution of a linear system using [`Krylov.jl`](https://github.com/JuliaSmoothOptimizers/Krylov.jl):
+
+```julia:ex12
+using Krylov
+A = rand(5, 5)
+opA = LinearOperator(A)
+opAAT = opA + opA'
+b = rand(5)
+(x, stats) = minres(opAAT, b)
+norm(b - opAAT * x)
 ```
 
 ## Limited memory BFGS and SR1
 
 Two other useful operators are the Limited-Memory BFGS in forward and inverse form.
 
-```julia:ex10
+```julia:ex13
 B = LBFGSOperator(20)
 H = InverseLBFGSOperator(20)
 r = 0.0
@@ -177,7 +210,7 @@ There is also a LSR1 operator that behaves similarly to these two.
 
 The restriction operator restricts a vector to a set of indices.
 
-```julia:ex11
+```julia:ex14
 v = collect(1:5)
 R = opRestriction([2;5], 5)
 R * v
@@ -185,13 +218,13 @@ R * v
 
 Notice that it corresponds to a matrix with rows of the identity given by the indices.
 
-```julia:ex12
+```julia:ex15
 Matrix(R)
 ```
 
 The extension operator is the transpose of the restriction. It extends a vector with zeros.
 
-```julia:ex13
+```julia:ex16
 v = collect(1:2)
 E = opExtension([2;5], 5)
 E * v
@@ -199,7 +232,7 @@ E * v
 
 With these operators, we define the slices of an operator `op`.
 
-```julia:ex14
+```julia:ex17
 A = rand(5,5)
 opA = LinearOperator(A)
 I = [1;3;5]
@@ -207,21 +240,21 @@ J = 2:4
 A[I,J] * ones(3)
 ```
 
-```julia:ex15
+```julia:ex18
 opRestriction(I, 5) * opA * opExtension(J, 5) * ones(3)
 ```
 
 A main difference with matrices, is that slices **do not** return vectors nor numbers.
 
-```julia:ex16
+```julia:ex19
 opA[1,:] * ones(5)
 ```
 
-```julia:ex17
+```julia:ex20
 opA[:,1] * ones(1)
 ```
 
-```julia:ex18
+```julia:ex21
 opA[1,1] * ones(1)
 ```
 

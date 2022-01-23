@@ -1,1 +1,2 @@
-ex = InexactError(:Float64, Float64, -0.5532529385100576 - 0.31440742415794976im)
+allocations 1st call = 80
+allocations 2nd call = 0

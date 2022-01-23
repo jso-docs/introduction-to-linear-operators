@@ -1,14 +1,14 @@
 # This file was generated, do not modify it. # hide
 using FFTW
-function mulfft!(res, v, α, β::T) where T
-  if β == zero(T)
+function mulfft!(res, v, α, β)
+  if β == 0
     res .= α .* fft(v)
   else
     res .= α .* fft(v) .+ β .* res
   end
 end
-function mulifft!(res, w, α, β::T) where T
-  if β == zero(T)
+function mulifft!(res, w, α, β)
+  if β == 0
     res .= α .* ifft(w)
   else
     res .= α .* ifft(w) .+ β .* res

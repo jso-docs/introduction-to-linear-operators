@@ -1,6 +1,6 @@
 Linear operator
-  nrow: 10
-  ncol: 10
+  nrow: 2
+  ncol: 2
   eltype: Float64
   symmetric: false
   hermitian: false

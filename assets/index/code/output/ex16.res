@@ -1,2 +1,6 @@
-1-element Vector{Float64}:
- 2.675970032630866
+5-element Vector{Int64}:
+ 0
+ 1
+ 0
+ 0
+ 2
