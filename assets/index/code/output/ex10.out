@@ -1,1 +1,1 @@
-ex = InexactError(:Float64, Float64, -0.14331640790056643 - 0.5582177341085783im)
+ex = InexactError(:Float64, Float64, -0.02236917009800352 - 0.2941351028082681im)
