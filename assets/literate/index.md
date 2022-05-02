@@ -1,5 +1,5 @@
 <!--This file was generated, do not modify it.-->
-LinearOperators.jl is a package for matrix-like operators. Linear operators are defined by how they act on a vector, which is useful in a variety of situations where you don't want to materialize the matrix.
+[LinearOperators.jl](https://juliasmoothoptimizers.github.io/LinearOperators.jl/stable) is a package for matrix-like operators. Linear operators are defined by how they act on a vector, which is useful in a variety of situations where you don't want to materialize the matrix.
 
 \toc
 
